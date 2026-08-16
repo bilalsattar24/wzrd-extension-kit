@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 export type MultiSelectOption = {
+	/** Option value included in `values`. */
 	value: string;
+	/** Visible label. */
 	label: string;
 };
 
@@ -31,15 +33,21 @@ export const WZRD_CHECKBOX_DISPLAY_STYLE: React.CSSProperties = {
 };
 
 type WzrdMultiSelectDropdownProps = {
+	/** Selectable items. */
 	options: MultiSelectOption[];
+	/** Currently selected values. */
 	values: string[];
+	/** Called with the full selected set after a toggle. */
 	onChange: (values: string[]) => void;
+	/** When true, the menu does not open. */
 	disabled?: boolean;
 	/** Shown on the closed button when nothing is selected. */
 	emptyLabel?: string;
 	/** Optional special row that selects/clears every option. */
 	showAllOption?: boolean;
+	/** Label for the select-all row. */
 	showAllLabel?: string;
+	/** Extra class on checkbox inputs. */
 	checkboxClassName?: string;
 };
 
