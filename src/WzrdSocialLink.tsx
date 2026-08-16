@@ -27,7 +27,18 @@ const SOCIAL_CONFIG = {
 	},
 };
 
-export function WzrdSocialLink({ network, size = 18 }: { network: SocialNetwork; size?: number }) {
+/**
+ * Icon button that opens a SportsWZRD social profile in a new tab.
+ */
+export function WzrdSocialLink({
+	network,
+	size = 18,
+}: {
+	/** Network to link. */
+	network: SocialNetwork;
+	/** SVG width and height in pixels. @defaultValue 18 */
+	size?: number;
+}) {
 	const config = SOCIAL_CONFIG[network];
 
 	return (
