@@ -2,20 +2,32 @@ import React from 'react';
 import Downshift from 'downshift';
 
 interface WzrdDropdownOption {
+	/** Option value written back through `onChange`. */
 	value: string;
+	/** Visible label. */
 	label: string;
 }
 
 interface WzrdDropdownProps {
+	/** Selectable items. */
 	options: WzrdDropdownOption[];
+	/** Currently selected option value. */
 	value: string;
+	/** Called with the new option value. */
 	onChange: (value: string) => void;
+	/** When true, the control does not open. */
 	disabled?: boolean;
+	/** Inline styles for the wrapper. */
 	style?: React.CSSProperties;
+	/** Inline styles for the toggle button. */
 	buttonStyle?: React.CSSProperties;
+	/** Closed-state label; defaults to the selected item. */
 	buttonLabel?: string;
 }
 
+/**
+ * Single-select dropdown built on Downshift, styled for host-page injection.
+ */
 export function WzrdDropdown({
 	options,
 	value,
