@@ -8,6 +8,7 @@ export interface WzrdErrorBoundaryProps {
 	label?: string;
 	/** Full product name in the default fallback copy. */
 	productName?: string;
+	/** Tree to protect. */
 	children: ReactNode;
 }
 
@@ -25,15 +26,23 @@ export class WzrdErrorBoundary extends Component<WzrdErrorBoundaryProps, WzrdErr
 		this.state = { hasError: false };
 	}
 
+	/** Marks the tree as failed so the next render shows the fallback. */
 	static getDerivedStateFromError(): WzrdErrorBoundaryState {
 		return { hasError: true };
 	}
 
+	/**
+	 * Logs the error with an optional feature label.
+	 *
+	 * @param error - Thrown value.
+	 * @param errorInfo - React component stack.
+	 */
 	componentDidCatch(error: Error, errorInfo: ErrorInfo) {
 		const label = this.props.label ? ` [${this.props.label}]` : '';
 		wzrdKitLog(`WzrdErrorBoundary${label} caught an error:`, error, errorInfo);
 	}
 
+	/** Clears the error so children mount again. */
 	private handleRetry = () => {
 		this.setState({ hasError: false });
 	};
