@@ -43,7 +43,10 @@ export type GetStripePricesResponse = {
 export type AccessBadge = 'ultra' | 'pro' | 'trial' | 'free';
 
 /**
- * Fetch live Stripe prices via the background script (avoids page CORS).
+ * Loads live Stripe prices through the background script (avoids page CORS).
+ *
+ * @param lookupKeys - Stripe price lookup keys to fetch.
+ * @returns Price list, or `{ ok: false }` on failure.
  */
 export async function fetchStripePricesViaBackground(
 	lookupKeys: string[],
@@ -60,7 +63,12 @@ export async function fetchStripePricesViaBackground(
 }
 
 /**
- * Formats a Stripe unit amount (cents) for the paywall.
+ * Formats a Stripe unit amount in cents for the paywall.
+ *
+ * @param amountCents - Amount in the smallest currency unit.
+ * @param currency - ISO currency code.
+ * @param interval - Billing interval, if any.
+ * @returns Localized price with `/mo` or `/yr` when interval is known.
  */
 export function formatStripePriceLabel(
 	amountCents: number,
@@ -80,7 +88,9 @@ export function formatStripePriceLabel(
 }
 
 /**
- * Default subscription when unauthenticated or on error.
+ * Free-tier subscription payload used when unauthenticated or on error.
+ *
+ * @returns A `tier: 'free'` status object.
  */
 export function defaultSubscription(): SubscriptionStatusResponse {
 	return {
@@ -94,7 +104,9 @@ export function defaultSubscription(): SubscriptionStatusResponse {
 }
 
 /**
- * Fetch subscription via background script (uses JWT from session).
+ * Loads subscription status through the background script using the session JWT.
+ *
+ * @returns Status from the server, or {@link defaultSubscription} on failure.
  */
 export async function fetchSubscriptionViaBackground(): Promise<SubscriptionStatusResponse> {
 	try {
@@ -116,7 +128,11 @@ export async function fetchSubscriptionViaBackground(): Promise<SubscriptionStat
 }
 
 /**
- * Access badge for this extension: Ultra, this sport's Pro, trial, or free.
+ * Maps a subscription payload to Ultra / this sport's Pro / trial / free.
+ *
+ * @param s - Status from {@link fetchSubscriptionViaBackground}.
+ * @param proProductKeys - Product keys that count as this extension's Pro.
+ * @returns Badge used on the status bar.
  */
 export function getAccessBadge(
 	s: SubscriptionStatusResponse,
@@ -130,16 +146,29 @@ export function getAccessBadge(
 	return 'pro';
 }
 
+/**
+ * Reports whether the user has Pro (or better) for this extension.
+ *
+ * @param s - Subscription status.
+ * @returns `true` when the access badge is not `free`.
+ */
 export function isProEntitled(s: SubscriptionStatusResponse): boolean {
 	return getAccessBadge(s) !== 'free';
 }
 
+/**
+ * Reports whether the user has SportsWZRD Ultra (including Ultra trial).
+ *
+ * @param s - Subscription status.
+ */
 export function isUltraEntitled(s: SubscriptionStatusResponse): boolean {
 	return s.tier === 'ultra' || (s.tier === 'trial' && s.entitlementTier === 'ultra');
 }
 
 /**
- * Whether the signed-in user has Pro (or better) for this extension.
+ * Reports whether the signed-in user has Pro (or better) for this extension.
+ *
+ * @returns `true` when unlocked via config or a qualifying subscription.
  */
 export async function isWZRDProUser(): Promise<boolean> {
 	if (unlockAllFeatures()) {
