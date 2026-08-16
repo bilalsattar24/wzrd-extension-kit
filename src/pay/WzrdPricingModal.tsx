@@ -17,7 +17,10 @@ type ResolvedPricing = {
 };
 
 /**
- * Formats a Stripe amount in cents, dropping the decimals on whole amounts.
+ * Formats a Stripe amount in cents, dropping decimals on whole amounts.
+ *
+ * @param cents - Amount in the smallest currency unit.
+ * @param currency - ISO currency code.
  */
 function formatAmount(cents: number, currency: string): string {
 	return new Intl.NumberFormat('en-US', {
@@ -29,8 +32,10 @@ function formatAmount(cents: number, currency: string): string {
 }
 
 /**
- * Percent saved by paying yearly rather than twelve monthly charges.
- * Null when yearly is not actually cheaper, so no false discount is ever shown.
+ * Percent saved by paying yearly instead of twelve monthly charges.
+ *
+ * @param pricing - Resolved monthly and yearly amounts.
+ * @returns Whole-number percent, or `null` when yearly is not cheaper.
  */
 function savingsPercent(pricing: ResolvedPricing): number | null {
 	const twelveMonths = pricing.monthlyCents * 12;
@@ -41,6 +46,10 @@ function savingsPercent(pricing: ResolvedPricing): number | null {
 
 /**
  * Plain-language billing terms for the selected plan.
+ *
+ * @param interval - Monthly or yearly.
+ * @param pricing - Resolved amounts.
+ * @param trialDays - Trial length; 0 means pay today.
  */
 function billingTerms(
 	interval: BillingInterval,
@@ -58,7 +67,10 @@ function billingTerms(
 }
 
 /**
- * Finds a fetched Stripe price by its lookup key.
+ * Finds a fetched Stripe price by lookup key.
+ *
+ * @param prices - Price list, or `null` while loading / on error.
+ * @param lookupKey - Stripe lookup key.
  */
 function priceByLookup(
 	prices: StripePriceInfo[] | null,
