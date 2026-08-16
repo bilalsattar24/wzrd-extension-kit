@@ -2,8 +2,8 @@ import { getSupabase } from './supabaseClient';
 import { wzrdKitLog } from '../log';
 
 /**
- * Handles OAuth callback from Google sign-in redirects.
- * Extracts tokens from the URL hash, sets the Supabase session, and clears the hash.
+ * Completes Google OAuth when the page hash contains access and refresh tokens.
+ * Sets the Supabase session and strips the hash from the URL.
  */
 export async function handleOAuthCallback(): Promise<void> {
 	const hash = window.location.hash;
