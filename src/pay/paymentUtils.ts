@@ -3,7 +3,13 @@ import { wzrdKitLog } from '../log';
 import { getSession } from '../auth/auth';
 
 /**
- * Opens Stripe checkout via the host extension background script.
+ * Opens Stripe checkout through the host extension background script.
+ *
+ * @param lookupKey - Stripe price lookup key.
+ * @param email - Optional checkout email.
+ * @param promoCode - Optional promo to apply.
+ * @param trialDays - Optional trial length.
+ * @returns Checkout URL payload, or `{ ok: false }` on failure.
  */
 export const openStripeCheckout = async (
 	lookupKey: string,
