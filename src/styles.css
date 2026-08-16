@@ -1,0 +1,29 @@
+@layer components {
+	.wz-wzrd-btn {
+		@apply wz-inline-flex wz-items-center wz-justify-center wz-gap-2 wz-rounded-lg wz-border wz-border-transparent wz-px-3.5 wz-py-2 wz-text-sm wz-font-semibold wz-cursor-pointer wz-transition-colors wz-duration-150;
+	}
+
+	.wz-wzrd-btn:disabled {
+		@apply wz-opacity-50 wz-cursor-not-allowed;
+	}
+
+	.wz-wzrd-btn-primary {
+		@apply wz-wzrd-btn wz-bg-wzrd-primary wz-text-white hover:wz-bg-wzrd-primary-hover;
+	}
+
+	.wz-wzrd-btn-secondary {
+		@apply wz-wzrd-btn wz-bg-white wz-text-wzrd-text wz-border-wzrd-border hover:wz-bg-wzrd-surface-muted;
+	}
+
+	.wz-wzrd-btn-ghost {
+		@apply wz-wzrd-btn wz-bg-transparent wz-text-wzrd-primary hover:wz-bg-wzrd-primary-soft wz-border-0;
+	}
+
+	.wz-wzrd-card {
+		@apply wz-rounded-wzrd-lg wz-border wz-border-wzrd-border wz-bg-white wz-shadow-wzrd;
+	}
+
+	.wz-wzrd-spinner {
+		@apply wz-inline-block wz-rounded-full wz-border-2 wz-border-wzrd-border wz-border-t-wzrd-primary wz-animate-spin;
+	}
+}
