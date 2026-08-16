@@ -35,6 +35,12 @@ export type WzrdTooltipProps = {
 	size?: 'default' | 'compact';
 };
 
+/**
+ * CSS transform that places the tooltip panel relative to the trigger.
+ *
+ * @param place - Preferred side of the trigger.
+ * @returns A CSS `transform` value.
+ */
 function panelTransform(place: WzrdTooltipProps['place']): string {
 	switch (place) {
 		case 'bottom':
@@ -49,6 +55,13 @@ function panelTransform(place: WzrdTooltipProps['place']): string {
 	}
 }
 
+/**
+ * Viewport coordinates for the tooltip origin.
+ *
+ * @param place - Preferred side of the trigger.
+ * @param rect - Trigger bounding box.
+ * @returns `top`/`left` in CSS pixels.
+ */
 function panelOrigin(
 	place: WzrdTooltipProps['place'],
 	rect: DOMRect,
