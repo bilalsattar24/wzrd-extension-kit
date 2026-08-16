@@ -4,8 +4,11 @@ import { WzrdStorageTtl } from '../storage/createWzrdStorage';
 import { WzrdModal } from '../WzrdModal';
 
 export type WzrdReleaseNote = {
+	/** Short heading. */
 	title: string;
+	/** Body copy. */
 	description: string;
+	/** Host this note applies to. */
 	platform: 'yahoo' | 'espn';
 };
 
@@ -18,9 +21,13 @@ export function WzrdReleaseNotes({
 	storageKey,
 	notes,
 }: {
+	/** Host page context; those notes are listed first. */
 	platform: 'yahoo' | 'espn';
+	/** Version token stored after dismiss (e.g. `release-notes-v7`). */
 	versionId: string;
+	/** Durable storage key for seen version ids. */
 	storageKey: string;
+	/** Notes to show. */
 	notes: WzrdReleaseNote[];
 }) {
 	const [isOpen, setIsOpen] = useState(false);
