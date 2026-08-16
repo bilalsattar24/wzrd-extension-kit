@@ -1,12 +1,19 @@
 import React from 'react';
 
+type LoadingIndicatorProps = {
+	/** Status copy announced to assistive tech. @defaultValue Loading… */
+	label?: string;
+	/** Extra classes on the outer wrapper. */
+	className?: string;
+};
+
+/**
+ * Centered spinner and status text for async panels.
+ */
 export function LoadingIndicator({
 	label = 'Loading…',
 	className = '',
-}: {
-	label?: string;
-	className?: string;
-}) {
+}: LoadingIndicatorProps) {
 	return (
 		<div
 			className={`wz-flex wz-flex-col wz-items-center wz-justify-center wz-gap-3 wz-py-8 wz-px-4 wz-font-sans ${className}`}
