@@ -14,11 +14,22 @@ import WzrdLoginButton from './WzrdLoginButton';
 import { WzrdProfileButton } from './WzrdProfileButton';
 import { WzrdWelcomeCallout } from './WzrdWelcomeCallout';
 
+/**
+ * Tailwind classes for the plan chip.
+ *
+ * @param kind - Plan kind shown on the bar.
+ */
 function planBadgeClassName(kind: 'pro' | 'ultra' | 'free' | 'trial' | 'beta'): string {
 	if (kind === 'free') return 'wz-bg-yellow-100 wz-text-yellow-800';
 	return 'wz-bg-green-100 wz-text-green-800';
 }
 
+/**
+ * Label and kind for the plan chip beside the product title.
+ *
+ * @param authenticated - Whether a user is signed in.
+ * @param subscription - Latest subscription payload, if loaded.
+ */
 function titlePlanBadge(
 	authenticated: boolean,
 	subscription: SubscriptionStatusResponse | null,
@@ -43,9 +54,13 @@ export function WzrdStatusBar({
 	frameClassName,
 	actions,
 }: {
+	/** Durable storage key for the welcome callout; omit to hide it. */
 	welcomeStorageKey?: string;
+	/** Welcome callout body; required when `welcomeStorageKey` is set. */
 	welcomeBody?: string;
+	/** Extra host-page classes for the outer card. */
 	frameClassName?: string;
+	/** Sport-specific controls (Start/Sit, Compare, …). */
 	actions?: ReactNode;
 }) {
 	const { productName } = getKitConfig();
