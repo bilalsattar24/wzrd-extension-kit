@@ -24,33 +24,50 @@ const TARGET_AFTER_EVICT_BYTES = 5 * 1024 * 1024;
 const MAX_AVG_KEYS = 2500;
 
 export type CreateWzrdStorageOptions = {
+	/** Keys that survive `clear()` unless `includeDurable` is true. */
 	durableKeys: Set<string> | readonly string[];
+	/** Flag written after one-time host localStorage cleanup. */
 	migrationKey: string;
+	/** True for host-page localStorage keys this extension should wipe on migrate/clear. */
 	isPageLocalStorageKey: (key: string) => boolean;
+	/** Optional override for classifying cache vs durable vs schedule keys. */
 	inferKind?: (key: string) => WzrdStorageKind;
 };
 
 export type ClearOptions = {
+	/** When true, durable preference keys are removed too. */
 	includeDurable?: boolean;
 };
 
 export type WzrdStorageApi = {
+	/** Loads envelopes from chrome.storage into memory. */
 	hydrate: () => Promise<void>;
+	/** Reads a value after hydrate; returns `defaultValue` when missing or expired. */
 	get: <T>(key: string, defaultValue?: T) => Promise<T | undefined>;
+	/** Synchronous read from the in-memory map only. */
 	getSync: <T>(key: string, defaultValue?: T) => T | undefined;
+	/** Writes a value with optional TTL (seconds) and kind. */
 	put: (key: string, value: unknown, ttlSeconds?: number, kind?: WzrdStorageKind) => Promise<void>;
+	/** Deletes one key. */
 	remove: (key: string) => Promise<void>;
+	/** True when the key has a non-expired value. */
 	keyExists: (key: string) => Promise<boolean>;
+	/** Drops cache keys; durable keys stay unless `includeDurable`. */
 	clear: (options?: ClearOptions) => Promise<void>;
+	/** LRU eviction toward a byte target. */
 	evictLru: (targetBytes?: number) => Promise<number>;
+	/** chrome.storage.local bytes in use. */
 	getBytesInUse: () => Promise<number>;
 };
 
+/** True when the chrome.storage.local API is available. */
 const hasChromeStorage = (): boolean =>
 	typeof chrome !== 'undefined' && !!chrome.storage && !!chrome.storage.local;
 
+/** Epoch milliseconds. */
 const now = () => Date.now();
 
+/** Type guard for kit storage envelopes. */
 const isEnvelope = (value: unknown): value is StoredEnvelope =>
 	!!value &&
 	typeof value === 'object' &&
@@ -58,7 +75,11 @@ const isEnvelope = (value: unknown): value is StoredEnvelope =>
 	'value' in (value as StoredEnvelope);
 
 /**
- * TTL cache on chrome.storage.local with LRU eviction. Each extension passes its own keys.
+ * Builds a TTL cache on `chrome.storage.local` with LRU eviction.
+ * Each extension passes its own durable keys and localStorage prefix rules.
+ *
+ * @param options - Key policy for this sport.
+ * @returns Storage helpers (`get` / `put` / `clear` / …).
  */
 export function createWzrdStorage(options: CreateWzrdStorageOptions): WzrdStorageApi {
 	const durableKeys = new Set(options.durableKeys);
