@@ -14,7 +14,10 @@ export type UsageStatusResponse = {
 };
 
 /**
- * Fetch usage via background (Bearer JWT). Returns null when logged out / error.
+ * Loads feature usage via the background script (Bearer JWT).
+ *
+ * @param feature - Usage bucket name. Defaults to `projections`.
+ * @returns Usage payload, or `null` when logged out or the request fails.
  */
 export async function fetchUsage(
 	feature: UsageFeature = 'projections',
