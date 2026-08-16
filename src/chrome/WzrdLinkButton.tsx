@@ -3,13 +3,21 @@ import { SPORTS_WZRD_PRIMARY } from '../brand';
 import clsx from 'clsx';
 
 interface WzrdLinkButtonProps {
+	/** Click handler. */
 	onClick: () => void;
+	/** Button label. */
 	label: string;
+	/** Extra classes on the button. */
 	className?: string;
+	/** Inline styles. */
 	style?: React.CSSProperties;
+	/** When true, shows a NEW badge. */
 	showNewBadge?: boolean;
 }
 
+/**
+ * Pill button used on control bars for in-page actions.
+ */
 export const WzrdLinkButton: React.FC<WzrdLinkButtonProps> = ({
 	onClick,
 	label,
