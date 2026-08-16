@@ -16,7 +16,13 @@ type MountHostElement = HTMLElement & {
 };
 
 /**
- * Create a React root for a DOM `element` and attach the given `Component`.
+ * Creates a React root on `element` and renders `Component` with QueryClient and an error boundary.
+ *
+ * @param Component - Root component type.
+ * @param element - Host mount node.
+ * @param props - Props passed to `Component`.
+ * @returns Handle with `update` and `unmount`.
+ * @throws When `element` is missing.
  */
 export function attachReactComponentToDomElement<T extends object>(
 	Component: ComponentType<T>,
@@ -65,7 +71,14 @@ export function attachReactComponentToDomElement<T extends object>(
 }
 
 /**
- * Mount (or remount) a React component into a stable DOM node id.
+ * Mounts (or remounts) a React tree on a stable element id.
+ * Stores the unmount handle on the node so content-script HMR can remount.
+ *
+ * @param Component - Root component type.
+ * @param rootId - `id` of the host node.
+ * @param props - Props passed to `Component`.
+ * @param insertNewElement - Called when the node does not exist yet.
+ * @returns Handle with `update` and `unmount`.
  */
 export function remountReactComponentById<T extends object>(
 	Component: ComponentType<T>,
@@ -97,7 +110,11 @@ export function remountReactComponentById<T extends object>(
 	return handle;
 }
 
-/** Tear down a previously remounted root and remove its DOM node. */
+/**
+ * Unmounts a tree created by {@link remountReactComponentById} and removes the node.
+ *
+ * @param rootId - `id` of the host node.
+ */
 export function unmountReactComponentById(rootId: string): void {
 	const el = document.getElementById(rootId) as MountHostElement | null;
 	el?.__wzrdReactUnmount?.();
