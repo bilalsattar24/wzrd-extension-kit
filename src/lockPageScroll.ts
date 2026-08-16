@@ -9,7 +9,10 @@ let savedBodyOverscroll = '';
 let listenersAttached = false;
 
 /**
- * True when `el` can scroll vertically (overflow auto/scroll and content taller than the box).
+ * Reports whether an element can scroll vertically.
+ *
+ * @param el - Element to inspect.
+ * @returns `true` when overflow-y is scrollable and content is taller than the box.
  */
 export function isVerticallyScrollable(el: HTMLElement): boolean {
 	const style = window.getComputedStyle(el);
@@ -21,8 +24,14 @@ export function isVerticallyScrollable(el: HTMLElement): boolean {
 }
 
 /**
- * Whether a wheel delta would scroll past the start or end of a container.
- * At the edges the event would otherwise leak to the page behind the modal.
+ * Reports whether a wheel delta would leave the scrollable range of a container.
+ * Used so the host ESPN/Yahoo page does not move when the dialog is already at an edge.
+ *
+ * @param deltaY - Wheel delta; negative is up.
+ * @param scrollTop - Current scroll offset of the container.
+ * @param scrollHeight - Full scrollable height of the container.
+ * @param clientHeight - Visible height of the container.
+ * @returns `true` when the event should be prevented so it does not leak to the page.
  */
 export function wheelWouldEscapeScrollable(
 	deltaY: number,
@@ -36,7 +45,10 @@ export function wheelWouldEscapeScrollable(
 }
 
 /**
- * Nearest vertically scrollable ancestor that still lives inside a react-modal content node.
+ * Finds the nearest vertically scrollable ancestor that still lives inside a react-modal content node.
+ *
+ * @param event - Wheel or touch event whose composed path is searched.
+ * @returns The scrollable element, or `null` if none exists inside the dialog.
  */
 function scrollableModalAncestor(event: Event): HTMLElement | null {
 	const path = event.composedPath();
@@ -50,7 +62,10 @@ function scrollableModalAncestor(event: Event): HTMLElement | null {
 }
 
 /**
- * True when the event originated inside a react-modal dialog (not just the dim overlay).
+ * Reports whether an event originated inside a react-modal dialog (not only the dim overlay).
+ *
+ * @param event - Event whose composed path is inspected.
+ * @returns `true` when a `ReactModal__Content` node is on the path.
  */
 function isInsideModalContent(event: Event): boolean {
 	return event
@@ -59,7 +74,9 @@ function isInsideModalContent(event: Event): boolean {
 }
 
 /**
- * Stops background scroll unless the user is scrolling a nested region inside the dialog.
+ * Prevents the host page from scrolling on wheel unless the user is scrolling inside the dialog.
+ *
+ * @param event - Capture-phase wheel event.
  */
 function onWheel(event: WheelEvent): void {
 	if (!isInsideModalContent(event)) {
@@ -84,7 +101,9 @@ function onWheel(event: WheelEvent): void {
 }
 
 /**
- * Blocks touch-drag on the overlay from moving ESPN/Yahoo; allows drag inside the dialog.
+ * Prevents overlay touch-drag from moving ESPN/Yahoo; allows drag inside the dialog.
+ *
+ * @param event - Capture-phase touchmove event.
  */
 function onTouchMove(event: TouchEvent): void {
 	if (!isInsideModalContent(event)) {
@@ -97,6 +116,9 @@ function onTouchMove(event: TouchEvent): void {
 	}
 }
 
+/**
+ * Applies overflow and overscroll locks on `html`/`body`, compensating for scrollbar width.
+ */
 function applyDocumentLock(): void {
 	const html = document.documentElement;
 	const { body } = document;
@@ -117,6 +139,9 @@ function applyDocumentLock(): void {
 	}
 }
 
+/**
+ * Restores `html`/`body` overflow styles saved by {@link applyDocumentLock}.
+ */
 function releaseDocumentLock(): void {
 	const html = document.documentElement;
 	const { body } = document;
@@ -127,6 +152,9 @@ function releaseDocumentLock(): void {
 	body.style.overscrollBehavior = savedBodyOverscroll;
 }
 
+/**
+ * Attaches capture-phase wheel and touchmove listeners once for the active lock.
+ */
 function attachListeners(): void {
 	if (listenersAttached) return;
 	listenersAttached = true;
@@ -134,6 +162,9 @@ function attachListeners(): void {
 	window.addEventListener('touchmove', onTouchMove, { capture: true, passive: false });
 }
 
+/**
+ * Removes the capture-phase wheel and touchmove listeners.
+ */
 function detachListeners(): void {
 	if (!listenersAttached) return;
 	listenersAttached = false;
@@ -142,8 +173,10 @@ function detachListeners(): void {
 }
 
 /**
- * Locks the host page while a WZRD modal is open. Nested modals share one lock
- * (refcount). Call the returned function on close.
+ * Locks the host page while a WZRD modal is open.
+ * Nested modals share one lock via a refcount. Call the returned function on close.
+ *
+ * @returns A disposer that decrements the lock; the document unlocks when the count hits zero.
  */
 export function lockPageScroll(): () => void {
 	lockCount += 1;
