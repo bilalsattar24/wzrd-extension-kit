@@ -13,7 +13,7 @@ Consumers: `fantasyBasketballWizard`, `fantasy-baseball-wzrd`, `fantasy-football
 - TypeScript. No `any` unless the user allows it.
 - Tailwind prefix `wz-`. No Shadow DOM. No Tailwind preflight (host pages).
 - Prefix shared UI with `Wzrd`.
-- JSDoc on functions and components.
+- TSDoc on functions and components (`@param name - …`, `@returns`; types live in TypeScript).
 - Prefer `async`/`await`.
 - Sport-specific Yahoo/ESPN DOM, stat math, and feature UIs stay in the sport repos.
 - Apps inject config: sport, brand strings, Stripe lookup keys, Supabase URL/key, storage prefix, background `send`.
