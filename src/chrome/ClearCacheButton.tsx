@@ -4,14 +4,12 @@ import { WzrdModal } from '../WzrdModal';
 import { WzrdTooltip } from '../WzrdTooltip';
 
 /**
- * ClearCacheButton
- *
- * Renders a small broom button that clears the extension's cached data. Includes
- * a confirmation modal after clearing, and a rich tooltip describing when to use it.
- * Keeps durable prefs/league setup by default.
+ * Broom control that clears the extension cache (durable prefs stay).
+ * Shows a confirmation modal afterward.
  */
 type ClearCacheButtonProps = {
-  clearUI?: () => void;
+	/** Optional UI reset after the user closes the confirmation. */
+	clearUI?: () => void;
 };
 export function ClearCacheButton({ clearUI }: ClearCacheButtonProps) {
   const [isCacheCleared, setIsCacheCleared] = useState(false);
