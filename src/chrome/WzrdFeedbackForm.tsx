@@ -9,10 +9,15 @@ import {
 } from './feedbackConstants';
 
 type Props = {
+	/** Which WZRD extension is sending feedback. */
 	extension: FeedbackExtension;
+	/** When false, the control links to the public contact page instead. */
 	authenticated: boolean;
 };
 
+/**
+ * In-popup feedback form. Posts to `/api/extension/feedback` when signed in.
+ */
 export default function WzrdFeedbackForm({ extension, authenticated }: Props) {
 	const [open, setOpen] = useState(false);
 	const [reason, setReason] = useState<FeedbackReason | null>(null);
