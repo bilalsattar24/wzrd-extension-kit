@@ -1,11 +1,16 @@
 import React from 'react';
 
 interface FeatureUpgradePromptProps {
-  featureName: string;
-  description: string;
-  onUpgrade: () => void;
-  className?: string;
-  compact?: boolean;
+	/** Feature name shown in the heading. */
+	featureName: string;
+	/** Short explanation of what Pro unlocks. */
+	description: string;
+	/** Called when the user chooses to upgrade. */
+	onUpgrade: () => void;
+	/** Extra classes on the wrapper. */
+	className?: string;
+	/** Compact single-row layout. */
+	compact?: boolean;
 }
 
 /**
