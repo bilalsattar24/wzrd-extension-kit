@@ -5,19 +5,30 @@ import { lockPageScroll } from './lockPageScroll';
 const ESPN_LARGEST_Z_INDEX = 1000009;
 
 type WzrdModalProps = ReactModalProps & {
+	/** Dialog body. */
 	children: React.ReactNode;
+	/**
+	 * When true, lock host-page scroll via {@link lockPageScroll}.
+	 * @defaultValue true
+	 */
 	preventScroll?: boolean;
+	/** CSS width of the content box. */
 	width?: string;
+	/** CSS height of the content box. */
 	height?: string;
+	/** CSS min-width of the content box. */
 	minWidth?: string;
+	/** CSS max-width of the content box. */
 	maxWidth?: string;
+	/** CSS min-height of the content box. */
 	minHeight?: string;
+	/** CSS max-height of the content box. */
 	maxHeight?: string;
 };
 
 /**
- * Full-screen overlay dialog. Locks ESPN/Yahoo page scroll while open
- * (`react-modal`'s `preventScroll` only affects focus, not the document).
+ * Full-screen overlay for content scripts.
+ * Locks ESPN/Yahoo page scroll while open (`react-modal`'s `preventScroll` only affects focus).
  */
 export const WzrdModal = ({
 	children,
