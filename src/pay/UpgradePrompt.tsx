@@ -5,13 +5,15 @@ import { unlockAllFeatures } from './promo';
 import { WzrdPricingModal } from './WzrdPricingModal';
 
 /**
- * Upgrade CTA for gated surfaces — opens the pricing modal (or sign-in first).
+ * Upgrade CTA for gated surfaces. Opens the pricing modal (or sign-in first).
  */
 export function UpgradePrompt({
 	text = 'Upgrade to unlock this feature',
 	context = 'Unlock Pro',
 }: {
+	/** Primary line on the banner. */
 	text?: string;
+	/** Headline passed to {@link WzrdPricingModal}. */
 	context?: string;
 }) {
 	const { authenticated } = useAuth();
