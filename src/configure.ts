@@ -47,14 +47,20 @@ export type WzrdKitConfig = {
 let kitConfig: WzrdKitConfig | null = null;
 
 /**
- * Call once from each extension's content-script / popup entry before using auth, pay, or chrome UI.
+ * Registers kit config for this content-script or popup context.
+ * Must run before auth, pay, or chrome UI that reads config.
+ *
+ * @param config - Product name, Supabase, Stripe lookups, and optional storage.
  */
 export function configureWzrdKit(config: WzrdKitConfig): void {
 	kitConfig = config;
 }
 
 /**
- * Current kit config. Throws if `configureWzrdKit` has not run.
+ * Returns the config passed to {@link configureWzrdKit}.
+ *
+ * @returns The active kit config.
+ * @throws When `configureWzrdKit` has not run.
  */
 export function getKitConfig(): WzrdKitConfig {
 	if (!kitConfig) {
@@ -64,7 +70,10 @@ export function getKitConfig(): WzrdKitConfig {
 }
 
 /**
- * Storage API from config, when the app passed one.
+ * Returns the storage API attached on kit config.
+ *
+ * @returns The {@link WzrdStorageApi} instance.
+ * @throws When config has no `storage`.
  */
 export function getKitStorage(): WzrdStorageApi {
 	const storage = getKitConfig().storage;
