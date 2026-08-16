@@ -1,4 +1,6 @@
-/** SportsWZRD brand tokens — aligned with sportswzrd.com / HeroUI primary. */
+/**
+ * SportsWZRD color tokens aligned with sportswzrd.com / HeroUI primary.
+ */
 export const SPORTS_WZRD_PRIMARY = '#006FEE';
 export const SPORTS_WZRD_PRIMARY_HOVER = '#005bc4';
 export const SPORTS_WZRD_PRIMARY_SOFT = '#e6f1fe';
