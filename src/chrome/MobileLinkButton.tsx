@@ -3,6 +3,9 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { getKitConfig } from '../configure';
 import { WzrdModal } from '../WzrdModal';
 
+/**
+ * Opens a QR modal pointing at sportswzrd.com for mobile access.
+ */
 export function MobileLinkButton() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const { sportswzrdBaseUrl } = getKitConfig();
