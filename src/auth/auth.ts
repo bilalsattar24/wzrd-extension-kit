@@ -22,7 +22,9 @@ export interface AuthSessionResponse {
 }
 
 /**
- * Get current auth session from Supabase.
+ * Reads the current Supabase session from chrome.storage-backed auth.
+ *
+ * @returns Session payload; `ok` is false on SDK or runtime errors.
  */
 export async function getSession(): Promise<AuthSessionResponse> {
 	try {
@@ -48,7 +50,11 @@ export async function getSession(): Promise<AuthSessionResponse> {
 }
 
 /**
- * Attempt login with email/password via Supabase.
+ * Signs in with email and password.
+ *
+ * @param email - Account email.
+ * @param password - Account password.
+ * @returns Session payload; `authenticated` is false when credentials fail.
  */
 export async function login(email: string, password: string): Promise<AuthSessionResponse> {
 	try {
@@ -77,7 +83,11 @@ export async function login(email: string, password: string): Promise<AuthSessio
 }
 
 /**
- * Sign up a new user with email/password via Supabase.
+ * Creates a user with email and password.
+ *
+ * @param email - Account email.
+ * @param password - Account password.
+ * @returns Session payload. `authenticated` is true only when signup also returns a session.
  */
 export async function signUp(email: string, password: string): Promise<AuthSessionResponse> {
 	try {
@@ -106,7 +116,9 @@ export async function signUp(email: string, password: string): Promise<AuthSessi
 }
 
 /**
- * Logout via Supabase.
+ * Signs out and clears the persisted Supabase session.
+ *
+ * @returns `{ ok: true }` on success, or `{ ok: false, error }` on failure.
  */
 export async function logout(): Promise<{ ok: boolean; error?: string }> {
 	try {
@@ -126,7 +138,10 @@ export async function logout(): Promise<{ ok: boolean; error?: string }> {
 }
 
 /**
- * Subscribe to Supabase auth state changes. Returns an unsubscribe function.
+ * Subscribes to Supabase auth state changes.
+ *
+ * @param cb - Called when the user signs in or out.
+ * @returns Unsubscribe function.
  */
 export function onAuthStateChanged(
 	cb: (state: { authenticated: boolean; user: WzrdUser | null }) => void,
@@ -146,7 +161,9 @@ export function onAuthStateChanged(
 }
 
 /**
- * React hook for current authentication state (no react-query).
+ * React hook for the current session. Does not require a QueryClientProvider.
+ *
+ * @returns Loading flag, user, session, error, and `refetch`.
  */
 export function useAuth() {
 	const [isLoading, setIsLoading] = useState(true);
