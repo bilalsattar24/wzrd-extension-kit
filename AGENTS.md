@@ -24,4 +24,4 @@ Consumers: `fantasyBasketballWizard`, `fantasy-baseball-wzrd`, `fantasy-football
 ## Safety
 
 - Do not stage, commit, or push unless the user asks.
-- Keep `README.md` current.
+- Keep `README.md` current, especially **Integrate into an extension** (GitHub dep, Tailwind `content` + preset, CSS import, `configureWzrdKit`, deep imports).
