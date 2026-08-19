@@ -84,6 +84,9 @@ export type {
 } from './pay/subscriptionUtils';
 export { fetchUsage } from './pay/usageUtils';
 export type { UsageFeature, UsageStatusResponse } from './pay/usageUtils';
+export { isValidCheckoutEmail } from './pay/checkoutEmail';
+export { WzrdCheckoutEmailPrompt } from './pay/WzrdCheckoutEmailPrompt';
+export type { WzrdCheckoutEmailPromptProps } from './pay/WzrdCheckoutEmailPrompt';
 export { WzrdPricingModal } from './pay/WzrdPricingModal';
 export { UpgradePrompt } from './pay/UpgradePrompt';
 export { FeatureUpgradePrompt } from './pay/FeatureUpgradePrompt';

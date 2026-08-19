@@ -8,6 +8,7 @@
 	"types": "./src/index.ts",
 	"exports": {
 		".": "./src/index.ts",
+		"./WzrdCheckoutEmailPrompt": "./src/pay/WzrdCheckoutEmailPrompt.tsx",
 		"./tailwind.preset": "./tailwind.preset.cjs",
 		"./styles.css": "./src/styles.css"
 	},

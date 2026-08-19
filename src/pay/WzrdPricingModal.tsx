@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useAuth, type WzrdUser } from '../auth/auth';
-import WzrdLoginForm from '../chrome/WzrdLoginForm';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../auth/auth';
 import { getKitConfig } from '../configure';
 import { wzrdKitLog } from '../log';
 import { WzrdModal } from '../WzrdModal';
+import { WzrdCheckoutEmailPrompt } from './WzrdCheckoutEmailPrompt';
 import { openStripeCheckout } from './paymentUtils';
 import { areFreeTrialsEnabled, getActivePromoCode, getFreeTrialDays } from './promo';
 import { fetchStripePricesViaBackground, type StripePriceInfo } from './subscriptionUtils';
@@ -172,16 +172,18 @@ export function WzrdPricingModal({
 	const [billingInterval, setBillingInterval] = useState<BillingInterval>('yearly');
 	const [checkoutLoading, setCheckoutLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [loginOpen, setLoginOpen] = useState(false);
+	const [emailPromptOpen, setEmailPromptOpen] = useState(false);
 	const [prices, setPrices] = useState<StripePriceInfo[] | null>(null);
 	const [pricesLoading, setPricesLoading] = useState(false);
-	const resumeCheckoutRef = useRef(false);
 
 	const trialDays = areFreeTrialsEnabled() ? getFreeTrialDays() : 0;
 	const lookupKeys = useMemo(() => [MONTHLY_LOOKUP, YEARLY_LOOKUP], []);
 
 	useEffect(() => {
-		if (!open) return;
+		if (!open) {
+			setEmailPromptOpen(false);
+			return;
+		}
 
 		let cancelled = false;
 		setPricesLoading(true);
@@ -215,12 +217,12 @@ export function WzrdPricingModal({
 	const savings = savingsPercent(pricing);
 
 	/**
-	 * Opens Stripe checkout for the selected plan, signing the user in first if needed.
+	 * Opens Stripe checkout. Signed-in users skip the email prompt; guests
+	 * enter an email so the backend can create or attach their account.
 	 */
-	const startCheckout = async (opts?: { skipAuthCheck?: boolean; email?: string }) => {
-		if (!authenticated && !opts?.skipAuthCheck) {
-			resumeCheckoutRef.current = true;
-			setLoginOpen(true);
+	const startCheckout = async (opts?: { skipEmailPrompt?: boolean; email?: string }) => {
+		if (!authenticated && !opts?.skipEmailPrompt) {
+			setEmailPromptOpen(true);
 			return;
 		}
 
@@ -235,6 +237,7 @@ export function WzrdPricingModal({
 				trialDays > 0 ? trialDays : undefined,
 			);
 			if (result.ok) {
+				setEmailPromptOpen(false);
 				onClose();
 			} else {
 				wzrdKitLog('Pricing checkout failed', result.error);
@@ -246,16 +249,6 @@ export function WzrdPricingModal({
 		} finally {
 			setCheckoutLoading(false);
 		}
-	};
-
-	/**
-	 * Continues to checkout once the user signs in from this modal.
-	 */
-	const onLoginSuccess = (loggedInUser: WzrdUser) => {
-		setLoginOpen(false);
-		if (!resumeCheckoutRef.current) return;
-		resumeCheckoutRef.current = false;
-		void startCheckout({ skipAuthCheck: true, email: loggedInUser.email });
 	};
 
 	if (!open) return null;
@@ -280,7 +273,7 @@ export function WzrdPricingModal({
 				maxHeight="90vh"
 				ariaHideApp={false}
 			>
-				<div className="wz-wzrd-card wz-overflow-hidden wz-font-sans wz-animate-wzrd-fade-in">
+				<div className="wz-wzrd-card wz-relative wz-overflow-hidden wz-font-sans wz-animate-wzrd-fade-in">
 					<div className="wz-relative wz-px-5 wz-pr-12 wz-pt-4">
 						<h2 className="wz-m-0 wz-text-lg wz-font-bold wz-text-wzrd-text">{context}</h2>
 						<p className="wz-m-0 wz-mt-1 wz-text-sm wz-text-wzrd-text-muted">
@@ -363,19 +356,17 @@ export function WzrdPricingModal({
 							Not now
 						</button>
 					</div>
+
+					<WzrdCheckoutEmailPrompt
+						open={emailPromptOpen}
+						submitting={checkoutLoading}
+						onCancel={() => setEmailPromptOpen(false)}
+						onSubmit={(email) => {
+							void startCheckout({ skipEmailPrompt: true, email });
+						}}
+					/>
 				</div>
 			</WzrdModal>
-
-			{loginOpen && (
-				<WzrdLoginForm
-					open={loginOpen}
-					onClose={() => {
-						resumeCheckoutRef.current = false;
-						setLoginOpen(false);
-					}}
-					onLoginSuccess={onLoginSuccess}
-				/>
-			)}
 		</>
 	);
 }

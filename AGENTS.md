@@ -17,6 +17,7 @@ Consumers: `fantasyBasketballWizard`, `fantasy-baseball-wzrd`, `fantasy-football
 - Prefer `async`/`await`.
 - Sport-specific Yahoo/ESPN DOM, stat math, and feature UIs stay in the sport repos.
 - Apps inject config: sport, brand strings, Stripe lookup keys, Supabase URL/key, storage prefix, background `send`.
+- Guest checkout is shared (`WzrdCheckoutEmailPrompt` + `isValidCheckoutEmail`). Do not require sign-in before Stripe; the web webhook creates the account.
 - Never add extension manifest permissions from this kit.
 
 ## Safety

@@ -29,7 +29,7 @@ Import `wzrd-extension-kit/styles.css` for `.wz-wzrd-btn-*`, `.wz-wzrd-card`, an
 - Primitives: modal, tooltip, dropdowns, social links, loading, error boundary
 - Auth: Supabase + `chrome.storage`, login form, OAuth callback
 - Storage: `createWzrdStorage` TTL/LRU cache
-- Pay: pricing modal, checkout/subscription/usage via injected `sendToBackground`
+- Pay: pricing modal, guest checkout email prompt (`WzrdCheckoutEmailPrompt`), checkout/subscription/usage via injected `sendToBackground`. Unsigned-in users enter an email; the web checkout webhook creates the account.
 - Chrome: status bar, welcome/coach marks, release notes, feedback, clear cache, profile/login/link/mobile QR
 
 Sport scrapers and projection math stay in each extension repo.
