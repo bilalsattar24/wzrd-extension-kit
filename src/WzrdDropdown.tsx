@@ -1,5 +1,5 @@
 import React from 'react';
-import Downshift from 'downshift';
+import Downshift, { type StateChangeOptions } from 'downshift';
 
 interface WzrdDropdownOption {
 	/** Option value written back through `onChange`. */
@@ -27,6 +27,7 @@ interface WzrdDropdownProps {
 
 /**
  * Single-select dropdown built on Downshift, styled for host-page injection.
+ * The open menu marks the current value (color + check) even before hover.
  */
 export function WzrdDropdown({
 	options,
@@ -37,11 +38,30 @@ export function WzrdDropdown({
 	buttonStyle,
 	buttonLabel,
 }: WzrdDropdownProps) {
+	const selectedIndex = options.findIndex((option) => option.value === value);
+
+	/**
+	 * Puts keyboard/hover highlight on the current value when the menu opens.
+	 *
+	 * @param state - Downshift state before this change.
+	 * @param changes - Proposed state patch.
+	 */
+	const stateReducer = (
+		state: { isOpen: boolean },
+		changes: StateChangeOptions<WzrdDropdownOption>,
+	) => {
+		if (changes.isOpen === true && !state.isOpen && selectedIndex >= 0) {
+			return { ...changes, highlightedIndex: selectedIndex };
+		}
+		return changes;
+	};
+
 	return (
 		<Downshift
 			selectedItem={options.find((option) => option.value === value) || null}
 			onChange={(selection) => selection && onChange(selection.value)}
 			itemToString={(item) => (item ? item.label : '')}
+			stateReducer={stateReducer}
 		>
 			{({
 				getItemProps,
@@ -131,24 +151,45 @@ export function WzrdDropdown({
 						}}
 					>
 						{isOpen &&
-							options.map((item, index) => (
-								<li
-									key={item.value}
-									{...getItemProps({ item, index })}
-									style={{
-										fontWeight: highlightedIndex === index ? 'bold' : 'normal',
-										padding: '8px 12px',
-										backgroundColor: highlightedIndex === index ? '#f0f7ff' : 'white',
-										cursor: 'pointer',
-										fontSize: '16px',
-										color: '#333',
-										transition: 'background-color 0.2s ease',
-										whiteSpace: 'nowrap',
-									}}
-								>
-									{item.label}
-								</li>
-							))}
+							options.map((item, index) => {
+								const isSelected = selectedItem?.value === item.value;
+								const isHighlighted = highlightedIndex === index;
+								return (
+									<li
+										key={item.value}
+										{...getItemProps({
+											item,
+											index,
+											'aria-selected': isSelected,
+										})}
+										style={{
+											display: 'flex',
+											alignItems: 'center',
+											justifyContent: 'space-between',
+											gap: '12px',
+											fontWeight: isSelected ? 700 : isHighlighted ? 600 : 400,
+											padding: '8px 12px',
+											backgroundColor: isHighlighted
+												? '#e6f1fe'
+												: isSelected
+													? '#f0f7ff'
+													: 'white',
+											cursor: 'pointer',
+											fontSize: '16px',
+											color: isSelected ? '#006FEE' : '#333',
+											transition: 'background-color 0.2s ease',
+											whiteSpace: 'nowrap',
+										}}
+									>
+										<span>{item.label}</span>
+										{isSelected && (
+											<span aria-hidden style={{ fontSize: '14px', fontWeight: 700 }}>
+												✓
+											</span>
+										)}
+									</li>
+								);
+							})}
 					</ul>
 				</div>
 			)}
