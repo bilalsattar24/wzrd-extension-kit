@@ -27,3 +27,26 @@
 		@apply wz-inline-block wz-rounded-full wz-border-2 wz-border-wzrd-border wz-border-t-wzrd-primary wz-animate-spin;
 	}
 }
+
+@keyframes wz-blur-reveal {
+	0% {
+		filter: blur(12px);
+		opacity: 0.6;
+	}
+	100% {
+		filter: blur(0);
+		opacity: 1;
+	}
+}
+
+.wz-animate-blur-reveal {
+	animation: wz-blur-reveal 4s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wz-animate-blur-reveal {
+		animation: none;
+		filter: none;
+		opacity: 1;
+	}
+}

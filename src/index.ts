@@ -28,6 +28,8 @@ export type { WzrdTooltipProps } from './WzrdTooltip';
 export { SocialNetwork, WzrdSocialLink } from './WzrdSocialLink';
 export { LoadingIndicator } from './LoadingIndicator';
 export { WzrdErrorBoundary } from './WzrdErrorBoundary';
+export { WzrdProjectionsSkeleton } from './WzrdProjectionsSkeleton';
+export type { WzrdProjectionsSkeletonProps } from './WzrdProjectionsSkeleton';
 export type { WzrdErrorBoundaryProps } from './WzrdErrorBoundary';
 export {
 	WZRD_CHECKBOX_DISPLAY_STYLE,

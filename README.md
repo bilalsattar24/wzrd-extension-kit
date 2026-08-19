@@ -20,13 +20,13 @@ content: [
 ],
 ```
 
-Import `wzrd-extension-kit/styles.css` for `.wz-wzrd-btn-*`, `.wz-wzrd-card`, and `.wz-wzrd-spinner`.
+Import `wzrd-extension-kit/styles.css` for `.wz-wzrd-btn-*`, `.wz-wzrd-card`, `.wz-wzrd-spinner`, and `.wz-animate-blur-reveal`.
 
 ## Modules
 
 - Design tokens + Tailwind preset + shared button/spinner CSS
 - Chrome/React mount helpers + scroll lock
-- Primitives: modal, tooltip, dropdowns, social links, loading, error boundary
+- Primitives: modal, tooltip, dropdowns, social links, loading, error boundary, projections skeleton (`WzrdProjectionsSkeleton`)
 - Auth: Supabase + `chrome.storage`, login form, OAuth callback
 - Storage: `createWzrdStorage` TTL/LRU cache
 - Pay: pricing modal, guest checkout email prompt (`WzrdCheckoutEmailPrompt`), checkout/subscription/usage via injected `sendToBackground`. Unsigned-in users enter an email; the web checkout webhook creates the account.
