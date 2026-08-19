@@ -78,13 +78,14 @@ Presentational pieces that do **not** need `configureWzrdKit`:
 
 | Export | Use |
 | --- | --- |
-| `WzrdProjectionsSkeleton` | Matchup loading overlay. Pass `loadingMessages` and `dummyCategories` from the sport (league cats when you have them). Pass Yahoo table classes as `tableClassName` — do not hardcode host classes in the kit. |
+| `WzrdDropdown` | Single-select Downshift control. Generic; sport repos pass options/labels. |
 | `WzrdCheckoutEmailPrompt` / `isValidCheckoutEmail` | Guest checkout email overlay. |
 
 Deep import using the package `exports` field (needs `moduleResolution` `bundler` or `node16` in the extension):
 
 ```ts
 import { WzrdProjectionsSkeleton } from 'wzrd-extension-kit/WzrdProjectionsSkeleton';
+import { WzrdDropdown } from 'wzrd-extension-kit/WzrdDropdown';
 import { WzrdCheckoutEmailPrompt } from 'wzrd-extension-kit/WzrdCheckoutEmailPrompt';
 ```
 

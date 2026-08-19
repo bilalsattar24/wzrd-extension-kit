@@ -9,6 +9,7 @@
 	"exports": {
 		".": "./src/index.ts",
 		"./WzrdCheckoutEmailPrompt": "./src/pay/WzrdCheckoutEmailPrompt.tsx",
+		"./WzrdDropdown": "./src/WzrdDropdown.tsx",
 		"./WzrdProjectionsSkeleton": "./src/WzrdProjectionsSkeleton.tsx",
 		"./tailwind.preset": "./tailwind.preset.cjs",
 		"./styles.css": "./src/styles.css"
