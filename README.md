@@ -81,14 +81,12 @@ Presentational pieces that do **not** need `configureWzrdKit`:
 | `WzrdProjectionsSkeleton` | Matchup loading overlay. Pass `loadingMessages` and `dummyCategories` from the sport (league cats when you have them). Pass Yahoo table classes as `tableClassName` — do not hardcode host classes in the kit. |
 | `WzrdCheckoutEmailPrompt` / `isValidCheckoutEmail` | Guest checkout email overlay. |
 
-Deep import so TypeScript `moduleResolution` `node10` and the barrel do not pull every peer (`qrcode.react`, etc.):
+Deep import using the package `exports` field (needs `moduleResolution` `bundler` or `node16` in the extension):
 
 ```ts
-import { WzrdProjectionsSkeleton } from 'wzrd-extension-kit/src/WzrdProjectionsSkeleton';
-import { WzrdCheckoutEmailPrompt } from 'wzrd-extension-kit/src/pay/WzrdCheckoutEmailPrompt';
+import { WzrdProjectionsSkeleton } from 'wzrd-extension-kit/WzrdProjectionsSkeleton';
+import { WzrdCheckoutEmailPrompt } from 'wzrd-extension-kit/WzrdCheckoutEmailPrompt';
 ```
-
-Package subpaths (`wzrd-extension-kit/WzrdProjectionsSkeleton`) work when `moduleResolution` is `bundler` / `node16`.
 
 `import { … } from 'wzrd-extension-kit'` is the full barrel. Only use it after `configureWzrdKit` and the peers below are installed.
 
