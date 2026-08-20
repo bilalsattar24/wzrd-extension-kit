@@ -160,7 +160,6 @@ export function WzrdDropdown({
 										{...getItemProps({
 											item,
 											index,
-											'aria-selected': isSelected,
 										})}
 										style={{
 											display: 'flex',
