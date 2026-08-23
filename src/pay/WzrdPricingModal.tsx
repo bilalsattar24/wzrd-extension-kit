@@ -17,6 +17,33 @@ type ResolvedPricing = {
 };
 
 /**
+ * Outcome-first headline for the feature the user just tried to open.
+ *
+ * @param context - Hint from the gated surface.
+ * @returns Display headline.
+ */
+function paywallHeadline(context: string): string {
+	if (/me vs\.? league/i.test(context)) return 'Unblur your weekly ranks';
+	if (/start\s*\/\s*sit/i.test(context)) return 'Set your best lineup in one click';
+	if (/player comparison|ai player/i.test(context)) return 'Compare players before you lock';
+	if (/^unlock /i.test(context) || /^upgrade /i.test(context)) {
+		return 'Win your matchup this week';
+	}
+	return context;
+}
+
+/**
+ * Monthly equivalent of a yearly Stripe amount, floored to the cent.
+ * $11.99 / 12 is $0.999ù; rounding would display $1.
+ *
+ * @param yearlyCents - Annual amount in the smallest currency unit.
+ * @returns Whole cents to show as the per-month equivalent.
+ */
+function yearlyMonthlyEquivalentCents(yearlyCents: number): number {
+	return Math.floor(yearlyCents / 12);
+}
+
+/**
  * Formats a Stripe amount in cents, dropping decimals on whole amounts.
  *
  * @param cents - Amount in the smallest currency unit.
@@ -57,13 +84,16 @@ function billingTerms(
 	trialDays: number,
 ): string {
 	const total = interval === 'yearly' ? pricing.yearlyCents : pricing.monthlyCents;
-	const cadence = interval === 'yearly' ? 'year' : 'month';
 	const amount = formatAmount(total, pricing.currency);
 
 	if (trialDays > 0) {
+		const cadence = interval === 'yearly' ? 'year' : 'month';
 		return `Free for ${trialDays} days, then ${amount} per ${cadence}. Cancel anytime before the trial ends.`;
 	}
-	return `${amount} today, then every ${cadence}. Cancel anytime.`;
+	if (interval === 'yearly') {
+		return `${amount} today, renews yearly. Cancel anytime.`;
+	}
+	return `${amount} today, renews monthly. Cancel anytime.`;
 }
 
 /**
@@ -80,84 +110,66 @@ function priceByLookup(
 }
 
 /**
- * A selectable plan. Both plans stay visible; the chosen one carries the emphasis.
+ * Check mark in a soft blue chip, used on the feature list.
  */
-function PlanRow({
-	label,
-	selected,
-	onSelect,
-	amount,
-	amountSuffix,
-	detail,
-	badge,
-}: {
-	label: string;
-	selected: boolean;
-	onSelect: () => void;
-	amount: string;
-	amountSuffix: string;
-	detail: string;
-	badge?: string;
-}) {
+function FeatureCheckChip() {
 	return (
-		<button
-			type="button"
-			role="radio"
-			aria-checked={selected}
-			onClick={onSelect}
-			className={`wz-flex wz-w-full wz-items-center wz-gap-3 wz-rounded-wzrd wz-border wz-p-3 wz-text-left wz-cursor-pointer wz-transition-colors wz-duration-150 ${
-				selected
-					? 'wz-border-wzrd-primary wz-bg-wzrd-primary-soft'
-					: 'wz-border-wzrd-border wz-bg-white hover:wz-bg-wzrd-surface-muted'
-			}`}
-		>
-			<span
-				aria-hidden
-				className={`wz-flex wz-h-4 wz-w-4 wz-shrink-0 wz-items-center wz-justify-center wz-rounded-full wz-border-2 ${
-					selected ? 'wz-border-wzrd-primary' : 'wz-border-wzrd-border'
-				}`}
-			>
-				{selected && <span className="wz-h-2 wz-w-2 wz-rounded-full wz-bg-wzrd-primary" />}
-			</span>
+		<span className="wz-flex wz-h-7 wz-w-7 wz-shrink-0 wz-items-center wz-justify-center wz-rounded-lg wz-bg-wzrd-primary-soft wz-text-wzrd-primary">
+			<svg className="wz-h-4 wz-w-4" viewBox="0 0 16 16" fill="none" aria-hidden>
+				<path
+					d="M3.5 8.5 6.5 11.5 12.5 4.5"
+					stroke="currentColor"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				/>
+			</svg>
+		</span>
+	);
+}
 
-			<span className="wz-min-w-0 wz-flex-1">
-				<span className="wz-flex wz-flex-wrap wz-items-center wz-gap-2">
-					<span className="wz-text-sm wz-font-bold wz-text-wzrd-text">{label}</span>
-					{badge && (
-						<span className="wz-rounded-full wz-bg-wzrd-success wz-px-2 wz-py-0.5 wz-text-[10px] wz-font-semibold wz-uppercase wz-tracking-wide wz-text-white">
-							{badge}
-						</span>
-					)}
-				</span>
-				<span className="wz-mt-0.5 wz-block wz-text-xs wz-text-wzrd-text-muted">{detail}</span>
-			</span>
-
-			<span className="wz-shrink-0 wz-text-right">
-				<span className="wz-block wz-text-lg wz-font-bold wz-text-wzrd-text">{amount}</span>
-				<span className="wz-block wz-text-[11px] wz-text-wzrd-text-muted">{amountSuffix}</span>
-			</span>
-		</button>
+/**
+ * Filled check circle marking the selected plan.
+ */
+function SelectedCheck() {
+	return (
+		<span className="wz-flex wz-h-5 wz-w-5 wz-shrink-0 wz-items-center wz-justify-center wz-rounded-full wz-bg-wzrd-primary">
+			<svg className="wz-h-3 wz-w-3 wz-text-white" viewBox="0 0 16 16" fill="none" aria-hidden>
+				<path
+					d="M3.5 8.5 6.5 11.5 12.5 4.5"
+					stroke="currentColor"
+					strokeWidth="2.2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				/>
+			</svg>
+		</span>
 	);
 }
 
 /**
  * Paywall for this extension's Pro plan. Lookup keys and feature copy come from kit config.
  *
- * Both billing options are shown at once with yearly pre-selected, followed by a
- * single checkout action and the exact billing terms. Amounts come from Stripe.
+ * The yearly plan is the dominant, pre-selected card with its monthly equivalent
+ * shown inline; monthly stays visible as a compact secondary option. One checkout
+ * action states the exact billed amount. Amounts come from Stripe.
  *
  * @param open - Whether the modal is visible.
  * @param onClose - Called when the user dismisses the modal.
- * @param context - Headline naming the feature the user just tried to open.
+ * @param context - Hint naming the feature the user just tried to open.
+ * @param headline - Optional action-specific headline (e.g. the two players picked)
+ *   that overrides the context-derived one.
  */
 export function WzrdPricingModal({
 	open,
 	onClose,
 	context = 'Unlock Pro',
+	headline: headlineOverride,
 }: {
 	open: boolean;
 	onClose: () => void;
 	context?: string;
+	headline?: string;
 }) {
 	const { authenticated, user } = useAuth();
 	const pricingCfg = getKitConfig().pricing;
@@ -178,12 +190,19 @@ export function WzrdPricingModal({
 
 	const trialDays = areFreeTrialsEnabled() ? getFreeTrialDays() : 0;
 	const lookupKeys = useMemo(() => [MONTHLY_LOOKUP, YEARLY_LOOKUP], []);
+	const headline = headlineOverride ?? paywallHeadline(context);
 
 	useEffect(() => {
 		if (!open) {
 			setEmailPromptOpen(false);
 			return;
 		}
+		setBillingInterval('yearly');
+		setError(null);
+	}, [open]);
+
+	useEffect(() => {
+		if (!open) return;
 
 		let cancelled = false;
 		setPricesLoading(true);
@@ -215,10 +234,16 @@ export function WzrdPricingModal({
 	}, [prices]);
 
 	const savings = savingsPercent(pricing);
+	const yearlyPerMonth = formatAmount(
+		yearlyMonthlyEquivalentCents(pricing.yearlyCents),
+		pricing.currency,
+	);
 
 	/**
 	 * Opens Stripe checkout. Signed-in users skip the email prompt; guests
 	 * enter an email so the backend can create or attach their account.
+	 *
+	 * @param opts - Skip the email prompt after it is submitted, and optional email.
 	 */
 	const startCheckout = async (opts?: { skipEmailPrompt?: boolean; email?: string }) => {
 		if (!authenticated && !opts?.skipEmailPrompt) {
@@ -255,12 +280,14 @@ export function WzrdPricingModal({
 
 	const selectedTotal = billingInterval === 'yearly' ? pricing.yearlyCents : pricing.monthlyCents;
 	const checkoutLabel = checkoutLoading
-		? 'Opening checkout‚Ä¶'
+		? 'Opening checkoutù'
 		: trialDays > 0
-		? `Start ${trialDays}-day free trial`
-		: `Continue ‚Äî ${formatAmount(selectedTotal, pricing.currency)}/${
-				billingInterval === 'yearly' ? 'year' : 'month'
-		  }`;
+			? `Start ${trialDays}-day free trial`
+			: `Unlock Pro ù ${formatAmount(selectedTotal, pricing.currency)}/${
+					billingInterval === 'yearly' ? 'year' : 'month'
+				}`;
+
+	const yearlySelected = billingInterval === 'yearly';
 
 	return (
 		<>
@@ -273,32 +300,37 @@ export function WzrdPricingModal({
 				maxHeight="90vh"
 				ariaHideApp={false}
 			>
-				<div className="wz-wzrd-card wz-relative wz-overflow-hidden wz-font-sans wz-animate-wzrd-fade-in">
-					<div className="wz-relative wz-px-5 wz-pr-12 wz-pt-4">
-						<h2 className="wz-m-0 wz-text-lg wz-font-bold wz-text-wzrd-text">{context}</h2>
-						<p className="wz-m-0 wz-mt-1 wz-text-sm wz-text-wzrd-text-muted">
-							Pro unlocks every WZRD tool inside ESPN and Yahoo.
+				<div className="wz-relative wz-overflow-hidden wz-rounded-wzrd-lg wz-bg-white wz-font-sans wz-shadow-wzrd-lg wz-animate-wzrd-fade-in">
+					<div className="wz-relative wz-bg-slate-900 wz-px-5 wz-pb-5 wz-pt-4">
+						<p className="wz-m-0 wz-text-[11px] wz-font-bold wz-tracking-[0.2em] wz-text-sky-400">
+							WZRD PRO
+						</p>
+						<h2 className="wz-m-0 wz-mt-1.5 wz-text-xl wz-font-bold wz-leading-tight wz-text-white">
+							{headline}
+						</h2>
+						<p className="wz-m-0 wz-mt-1 wz-text-[13px] wz-leading-snug wz-text-slate-300">
+							One plan unlocks every Pro tool on ESPN and Yahoo.
 						</p>
 						<button
 							type="button"
 							aria-label="Close"
 							onClick={onClose}
-							className="wz-absolute wz-right-3 wz-top-3 wz-flex wz-h-7 wz-w-7 wz-items-center wz-justify-center wz-rounded-lg wz-border-0 wz-bg-transparent wz-text-lg wz-leading-none wz-text-wzrd-text-muted wz-cursor-pointer hover:wz-bg-wzrd-surface-muted"
+							className="wz-absolute wz-right-3 wz-top-3 wz-flex wz-h-7 wz-w-7 wz-items-center wz-justify-center wz-rounded-lg wz-border-0 wz-bg-transparent wz-text-lg wz-leading-none wz-text-slate-400 wz-cursor-pointer hover:wz-bg-white/10 hover:wz-text-white"
 						>
-							√ó
+							ù
 						</button>
 					</div>
 
 					<div className="wz-max-h-[70vh] wz-overflow-y-auto wz-px-5 wz-py-4">
-						<ul className="wz-m-0 wz-mb-4 wz-list-none wz-space-y-1.5 wz-p-0">
-							{PRO_FEATURES.map((feature) => (
+						<ul className="wz-m-0 wz-mb-4 wz-list-none wz-space-y-2.5 wz-p-0">
+							{PRO_FEATURES.map((feature, index) => (
 								<li
 									key={feature}
-									className="wz-flex wz-items-start wz-gap-2 wz-text-[13px] wz-text-wzrd-text"
+									className={`wz-flex wz-items-center wz-gap-2.5 wz-text-[13px] wz-leading-snug wz-text-wzrd-text ${
+										index === 0 ? 'wz-font-semibold' : ''
+									}`}
 								>
-									<span className="wz-mt-px wz-font-bold wz-text-wzrd-primary" aria-hidden>
-										‚úì
-									</span>
+									<FeatureCheckChip />
 									<span>{feature}</span>
 								</li>
 							))}
@@ -310,23 +342,61 @@ export function WzrdPricingModal({
 							aria-busy={pricesLoading}
 							className="wz-flex wz-flex-col wz-gap-2"
 						>
-							<PlanRow
-								label="Yearly"
-								selected={billingInterval === 'yearly'}
-								onSelect={() => setBillingInterval('yearly')}
-								amount={formatAmount(Math.round(pricing.yearlyCents / 12), pricing.currency)}
-								amountSuffix="per month"
-								detail={`${formatAmount(pricing.yearlyCents, pricing.currency)} billed once a year`}
-								badge={savings ? `Save ${savings}%` : undefined}
-							/>
-							<PlanRow
-								label="Monthly"
-								selected={billingInterval === 'monthly'}
-								onSelect={() => setBillingInterval('monthly')}
-								amount={formatAmount(pricing.monthlyCents, pricing.currency)}
-								amountSuffix="per month"
-								detail="Billed every month"
-							/>
+							<button
+								type="button"
+								role="radio"
+								aria-checked={yearlySelected}
+								onClick={() => setBillingInterval('yearly')}
+								className={`wz-relative wz-w-full wz-rounded-wzrd wz-border-2 wz-p-4 wz-pt-5 wz-text-left wz-cursor-pointer wz-transition-colors wz-duration-150 ${
+									yearlySelected
+										? 'wz-border-wzrd-primary wz-bg-wzrd-primary-soft'
+										: 'wz-border-wzrd-primary/30 wz-bg-white hover:wz-bg-wzrd-primary-soft/50'
+								}`}
+							>
+								<span className="wz-absolute wz--top-2.5 wz-left-4 wz-rounded-full wz-bg-wzrd-success wz-px-2.5 wz-py-0.5 wz-text-[10px] wz-font-bold wz-uppercase wz-tracking-wide wz-text-white">
+									{savings ? `Best value ù Save ${savings}%` : 'Best value'}
+								</span>
+								<span className="wz-flex wz-items-center wz-gap-3">
+									<span className="wz-min-w-0 wz-flex-1">
+										<span className="wz-block wz-text-sm wz-font-bold wz-text-wzrd-text">
+											Season pass
+										</span>
+										<span className="wz-mt-0.5 wz-block wz-text-xs wz-text-wzrd-text-muted">
+											{formatAmount(pricing.yearlyCents, pricing.currency)} billed once ù
+											covers the whole season
+										</span>
+									</span>
+									<span className="wz-shrink-0 wz-text-right">
+										<span className="wz-block wz-text-2xl wz-font-bold wz-leading-none wz-text-wzrd-text">
+											{yearlyPerMonth}
+										</span>
+										<span className="wz-mt-1 wz-block wz-text-[11px] wz-text-wzrd-text-muted">
+											per month
+										</span>
+									</span>
+									{yearlySelected && <SelectedCheck />}
+								</span>
+							</button>
+
+							<button
+								type="button"
+								role="radio"
+								aria-checked={!yearlySelected}
+								onClick={() => setBillingInterval('monthly')}
+								className={`wz-flex wz-w-full wz-items-center wz-gap-3 wz-rounded-wzrd wz-border wz-px-4 wz-py-2.5 wz-text-left wz-cursor-pointer wz-transition-colors wz-duration-150 ${
+									!yearlySelected
+										? 'wz-border-wzrd-primary wz-bg-wzrd-primary-soft'
+										: 'wz-border-wzrd-border wz-bg-white hover:wz-bg-wzrd-surface-muted'
+								}`}
+							>
+								<span className="wz-min-w-0 wz-flex-1 wz-text-[13px] wz-font-semibold wz-text-wzrd-text">
+									Monthly
+								</span>
+								<span className="wz-shrink-0 wz-text-[13px] wz-text-wzrd-text-muted">
+									{formatAmount(pricing.monthlyCents, pricing.currency)}/month
+								</span>
+								{!yearlySelected && <SelectedCheck />}
+							</button>
 						</div>
 
 						{error && (
@@ -337,24 +407,24 @@ export function WzrdPricingModal({
 
 						<button
 							type="button"
-							className="wz-wzrd-btn-primary wz-mt-4 wz-w-full wz-py-2.5"
+							className="wz-wzrd-btn-primary wz-mt-4 wz-w-full wz-py-3 wz-text-[15px]"
 							disabled={checkoutLoading}
 							onClick={() => void startCheckout()}
 						>
 							{checkoutLabel}
 						</button>
 
-						<p className="wz-m-0 wz-mt-2 wz-text-center wz-text-[11px] wz-text-wzrd-text-muted">
+						<p className="wz-m-0 wz-mt-2.5 wz-text-center wz-text-[11px] wz-text-wzrd-text-muted">
 							{billingTerms(billingInterval, pricing, trialDays)}
 						</p>
 
-						<button
-							type="button"
-							className="wz-wzrd-btn-ghost wz-mt-1 wz-w-full wz-text-wzrd-text-muted"
-							onClick={onClose}
-						>
-							Not now
-						</button>
+						<div className="wz-mt-3 wz-flex wz-items-center wz-justify-center wz-gap-1.5 wz-border-t wz-border-wzrd-border wz-pt-3 wz-text-[11px] wz-text-wzrd-text-muted">
+							<span>Instant access</span>
+							<span aria-hidden>ù</span>
+							<span>Cancel anytime</span>
+							<span aria-hidden>ù</span>
+							<span>Works on ESPN &amp; Yahoo</span>
+						</div>
 					</div>
 
 					<WzrdCheckoutEmailPrompt
