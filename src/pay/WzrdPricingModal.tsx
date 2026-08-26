@@ -34,7 +34,7 @@ function paywallHeadline(context: string): string {
 
 /**
  * Monthly equivalent of a yearly Stripe amount, floored to the cent.
- * $11.99 / 12 is $0.999ù; rounding would display $1.
+ * $11.99 / 12 is $0.999...; rounding would display $1.
  *
  * @param yearlyCents - Annual amount in the smallest currency unit.
  * @returns Whole cents to show as the per-month equivalent.
@@ -280,10 +280,10 @@ export function WzrdPricingModal({
 
 	const selectedTotal = billingInterval === 'yearly' ? pricing.yearlyCents : pricing.monthlyCents;
 	const checkoutLabel = checkoutLoading
-		? 'Opening checkoutù'
+		? 'Opening checkout\u2026'
 		: trialDays > 0
 			? `Start ${trialDays}-day free trial`
-			: `Unlock Pro ù ${formatAmount(selectedTotal, pricing.currency)}/${
+			: `Unlock Pro \u00b7 ${formatAmount(selectedTotal, pricing.currency)}/${
 					billingInterval === 'yearly' ? 'year' : 'month'
 				}`;
 
@@ -317,7 +317,7 @@ export function WzrdPricingModal({
 							onClick={onClose}
 							className="wz-absolute wz-right-3 wz-top-3 wz-flex wz-h-7 wz-w-7 wz-items-center wz-justify-center wz-rounded-lg wz-border-0 wz-bg-transparent wz-text-lg wz-leading-none wz-text-slate-400 wz-cursor-pointer hover:wz-bg-white/10 hover:wz-text-white"
 						>
-							ù
+							{'\u00d7'}
 						</button>
 					</div>
 
@@ -354,7 +354,7 @@ export function WzrdPricingModal({
 								}`}
 							>
 								<span className="wz-absolute wz--top-2.5 wz-left-4 wz-rounded-full wz-bg-wzrd-success wz-px-2.5 wz-py-0.5 wz-text-[10px] wz-font-bold wz-uppercase wz-tracking-wide wz-text-white">
-									{savings ? `Best value ù Save ${savings}%` : 'Best value'}
+									{savings ? `Best value \u00b7 Save ${savings}%` : 'Best value'}
 								</span>
 								<span className="wz-flex wz-items-center wz-gap-3">
 									<span className="wz-min-w-0 wz-flex-1">
@@ -362,7 +362,7 @@ export function WzrdPricingModal({
 											Season pass
 										</span>
 										<span className="wz-mt-0.5 wz-block wz-text-xs wz-text-wzrd-text-muted">
-											{formatAmount(pricing.yearlyCents, pricing.currency)} billed once ù
+											{formatAmount(pricing.yearlyCents, pricing.currency)} billed once {'\u00b7'}
 											covers the whole season
 										</span>
 									</span>
@@ -420,9 +420,9 @@ export function WzrdPricingModal({
 
 						<div className="wz-mt-3 wz-flex wz-items-center wz-justify-center wz-gap-1.5 wz-border-t wz-border-wzrd-border wz-pt-3 wz-text-[11px] wz-text-wzrd-text-muted">
 							<span>Instant access</span>
-							<span aria-hidden>ù</span>
+							<span aria-hidden>{'\u00b7'}</span>
 							<span>Cancel anytime</span>
-							<span aria-hidden>ù</span>
+							<span aria-hidden>{'\u00b7'}</span>
 							<span>Works on ESPN &amp; Yahoo</span>
 						</div>
 					</div>
