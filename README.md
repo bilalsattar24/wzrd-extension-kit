@@ -6,6 +6,8 @@ This package is **extension-only**. Do not import it from `sportswzrd-web`. Spor
 
 Not published to npm.
 
+**Full API catalog:** see [`EXPORTS.md`](./EXPORTS.md) for every component, hook, function, and type the kit exports, what each does, and which ones require `configureWzrdKit`. Check it before building something in a sport repo — it may already exist here.
+
 ## Integrate into an extension
 
 Do these steps in the **consuming** repo (`fantasyBasketballWizard`, `fantasy-football-wzrd`, `fantasy-baseball-wzrd`). The kit never adds Chrome/Firefox manifest permissions.

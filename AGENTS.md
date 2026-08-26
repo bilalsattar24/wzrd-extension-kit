@@ -8,6 +8,8 @@ This package is **extension-only**. Do not add Next.js / sportswzrd-web barrels.
 
 Consumers: `fantasyBasketballWizard`, `fantasy-baseball-wzrd`, `fantasy-football-wzrd`.
 
+`EXPORTS.md` is the API catalog for consumers (every export, what it does, config requirements). Agents in the sport repos read it via `node_modules/wzrd-extension-kit/EXPORTS.md` to know what the kit already provides.
+
 ## Conventions
 
 - TypeScript. No `any` unless the user allows it.
@@ -25,3 +27,4 @@ Consumers: `fantasyBasketballWizard`, `fantasy-baseball-wzrd`, `fantasy-football
 
 - Do not stage, commit, or push unless the user asks.
 - Keep `README.md` current, especially **Integrate into an extension** (GitHub dep, Tailwind `content` + preset, CSS import, `configureWzrdKit`, deep imports).
+- Keep `EXPORTS.md` in sync with `src/index.ts` whenever exports are added, removed, or their props/signatures change.
