@@ -11,6 +11,7 @@
 		"./WzrdCheckoutEmailPrompt": "./src/pay/WzrdCheckoutEmailPrompt.tsx",
 		"./WzrdDropdown": "./src/WzrdDropdown.tsx",
 		"./WzrdProjectionsSkeleton": "./src/WzrdProjectionsSkeleton.tsx",
+		"./mixpanel": "./src/analytics/mixpanel.ts",
 		"./tailwind.preset": "./tailwind.preset.cjs",
 		"./styles.css": "./src/styles.css"
 	},

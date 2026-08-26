@@ -15,6 +15,23 @@ export {
 } from './brand';
 export { configureWzrdKit, getKitConfig, getKitStorage } from './configure';
 export type { WzrdBackgroundMessage, WzrdBackgroundSend, WzrdKitConfig, WzrdPricingConfig } from './configure';
+export {
+	buildMixpanelEvent,
+	createMixpanelClient,
+	encodeMixpanelFormBody,
+	getExtensionBrowser,
+	sanitizeProperties,
+	utf8ToBase64,
+} from './analytics/mixpanel';
+export type {
+	CreateMixpanelClientOptions,
+	MixpanelClient,
+	MixpanelProperties,
+	MixpanelPropertyValue,
+	MixpanelRuntimeContext,
+	MixpanelTrackEvent,
+} from './analytics/mixpanel';
+export { trackEvent, trackEventAsync } from './analytics/track';
 export { wzrdKitLog } from './log';
 export {
 	isVerticallyScrollable,

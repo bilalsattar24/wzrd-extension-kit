@@ -14,7 +14,12 @@ export type WzrdBackgroundMessage =
 	  }
 	| { type: 'GET_STRIPE_PRICES'; lookupKeys: string[] }
 	| { type: 'CHECK_SUBSCRIPTION'; accessToken: string }
-	| { type: 'GET_USAGE'; accessToken: string; feature: string };
+	| { type: 'GET_USAGE'; accessToken: string; feature: string }
+	| {
+			type: 'TRACK_EVENT';
+			event: string;
+			properties?: Record<string, string | number | boolean | null | undefined>;
+	  };
 
 export type WzrdBackgroundSend = (message: WzrdBackgroundMessage) => Promise<unknown>;
 

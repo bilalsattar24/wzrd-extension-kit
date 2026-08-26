@@ -12,6 +12,7 @@ Keep this file in sync with `src/index.ts` whenever exports change.
 | `wzrd-extension-kit/WzrdDropdown` | Deep import, no config needed. |
 | `wzrd-extension-kit/WzrdProjectionsSkeleton` | Deep import, no config needed. |
 | `wzrd-extension-kit/WzrdCheckoutEmailPrompt` | Deep import, no config needed. |
+| `wzrd-extension-kit/mixpanel` | Mixpanel `/track` client for the host service worker. No React, no `configureWzrdKit`. |
 | `wzrd-extension-kit/tailwind.preset` | Tailwind preset (tokens, `wz-` prefix, no preflight). |
 | `wzrd-extension-kit/styles.css` | Static classes: `.wz-wzrd-btn*`, `.wz-wzrd-card`, `.wz-wzrd-spinner`, `.wz-animate-blur-reveal`. |
 
@@ -26,7 +27,7 @@ Keep this file in sync with `src/index.ts` whenever exports change.
 | `getKitStorage()` | function | storage | Returns the `WzrdStorageApi` from config; throws if none was passed. |
 | `WzrdKitConfig` | type | — | `{ productName, sportswzrdBaseUrl, supabaseUrl, supabaseAnonKey, authSuccessPath, sendToBackground, pricing, unlockAllFeatures?, freeTrial?, getActivePromoCode?, storage? }` |
 | `WzrdPricingConfig` | type | — | `{ monthlyLookupKey, yearlyLookupKey, features, fallbackMonthlyCents, fallbackYearlyCents, currency?, proProductKeys }` |
-| `WzrdBackgroundMessage` | type | — | Union of kit → background messages: `STRIPE_CHECKOUT`, `GET_STRIPE_PRICES`, `CHECK_SUBSCRIPTION`, `GET_USAGE`. The host extension's background must handle all four. |
+| `WzrdBackgroundMessage` | type | — | Union of kit → background messages: `STRIPE_CHECKOUT`, `GET_STRIPE_PRICES`, `CHECK_SUBSCRIPTION`, `GET_USAGE`, `TRACK_EVENT`. The host extension's background must handle all five. |
 | `WzrdBackgroundSend` | type | — | `(message: WzrdBackgroundMessage) => Promise<unknown>` — map onto the host's typed bus. |
 
 ## Brand tokens (`src/brand.ts`) — config: none
@@ -132,6 +133,19 @@ Guest checkout rule: collect an email with `WzrdCheckoutEmailPrompt`, then open 
 | `FEEDBACK_REASONS`, `FEEDBACK_REASON_LABELS` | none | Feedback reason ids and labels. | — |
 | `FeedbackExtension`, `FeedbackReason` | types | `'basketball' \| 'baseball' \| 'football'` and reason union. | — |
 
+## Mixpanel (`src/analytics/`) — token from the host; never the API secret
+
+Event **names** stay in each sport repo (`FF League Page Loaded`, …). The kit only sends and posts.
+
+| Export | Kind | Config | What it does |
+| --- | --- | --- | --- |
+| `trackEvent(event, properties?)` / `trackEventAsync` | function | config | Content script / popup → `TRACK_EVENT` on `sendToBackground`. Attaches `authenticated` and `user_id` (Supabase id, not email). |
+| `createMixpanelClient(options)` | function | none | Service-worker client. Options: `token` (project token), `distinctIdStorageKey`, `mpLib`, optional `environment` / `log`. Import from `wzrd-extension-kit/mixpanel` so the worker does not bundle kit React. |
+| `buildMixpanelEvent` / `sanitizeProperties` / `utf8ToBase64` / `encodeMixpanelFormBody` | function | none | Pure `/track` payload helpers (tests and custom workers). |
+| `MixpanelProperties`, `MixpanelClient`, `CreateMixpanelClientOptions` | types | — | Property map and client shapes. |
+
+Do **not** add Mixpanel `host_permissions`. `/track` is a CORS form POST from the worker. Do **not** ship the Mixpanel API secret.
+
 ## What is NOT in this kit
 
-Stays in each sport repo: Yahoo/ESPN DOM scraping and selectors, stat math and projections, sport feature UIs, extension manifests and background scripts, Stripe lookup key values, Supabase credentials. The kit never adds manifest permissions.
+Stays in each sport repo: Yahoo/ESPN DOM scraping and selectors, stat math and projections, sport feature UIs, extension manifests and background scripts, Stripe lookup key values, Supabase credentials, Mixpanel event names and the project token. The kit never adds manifest permissions.

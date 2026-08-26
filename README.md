@@ -82,6 +82,7 @@ Presentational pieces that do **not** need `configureWzrdKit`:
 | --- | --- |
 | `WzrdDropdown` | Single-select Downshift control. Generic; sport repos pass options/labels. |
 | `WzrdCheckoutEmailPrompt` / `isValidCheckoutEmail` | Guest checkout email overlay. |
+| `createMixpanelClient` (`wzrd-extension-kit/mixpanel`) | Service-worker Mixpanel `/track` client. |
 
 Deep import using the package `exports` field (needs `moduleResolution` `bundler` or `node16` in the extension):
 
@@ -89,6 +90,7 @@ Deep import using the package `exports` field (needs `moduleResolution` `bundler
 import { WzrdProjectionsSkeleton } from 'wzrd-extension-kit/WzrdProjectionsSkeleton';
 import { WzrdDropdown } from 'wzrd-extension-kit/WzrdDropdown';
 import { WzrdCheckoutEmailPrompt } from 'wzrd-extension-kit/WzrdCheckoutEmailPrompt';
+import { createMixpanelClient } from 'wzrd-extension-kit/mixpanel';
 ```
 
 `import { … } from 'wzrd-extension-kit'` is the full barrel. Only use it after `configureWzrdKit` and the peers below are installed.
@@ -119,7 +121,9 @@ configureWzrdKit({
 });
 ```
 
-Map `sendToBackground` onto the host extension’s typed bus. Kit messages: `STRIPE_CHECKOUT`, `GET_STRIPE_PRICES`, `CHECK_SUBSCRIPTION`, `GET_USAGE`.
+Map `sendToBackground` onto the host extension’s typed bus. Kit messages: `STRIPE_CHECKOUT`, `GET_STRIPE_PRICES`, `CHECK_SUBSCRIPTION`, `GET_USAGE`, `TRACK_EVENT`.
+
+Mixpanel: each extension defines event names and passes its **project token** (not the API secret) into `createMixpanelClient` in the service worker. Content scripts call `trackEvent` after `configureWzrdKit`. Deep-import `wzrd-extension-kit/mixpanel` from the worker so kit React stays out of that bundle. Do not add Mixpanel `host_permissions`.
 
 Guest checkout: collect email with `WzrdCheckoutEmailPrompt`, then Stripe. Do not require sign-in first. The web checkout webhook creates the account.
 
@@ -135,4 +139,5 @@ Already in the extensions: `react`, `react-dom`, `react-modal`, `@supabase/supab
 - Auth: Supabase + `chrome.storage`, login form, OAuth callback
 - Storage: `createWzrdStorage` TTL/LRU cache
 - Pay: pricing modal, guest checkout email prompt, checkout/subscription/usage via `sendToBackground`
+- Mixpanel: `trackEvent` (content/popup) + `createMixpanelClient` (service worker). Event names and the project token stay in each sport repo.
 - Chrome: status bar, welcome/coach marks, release notes, feedback, clear cache, profile/login/link/mobile QR
