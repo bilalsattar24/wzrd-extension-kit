@@ -27,7 +27,7 @@ Keep this file in sync with `src/index.ts` whenever exports change.
 | `getKitStorage()` | function | storage | Returns the `WzrdStorageApi` from config; throws if none was passed. |
 | `WzrdKitConfig` | type | — | `{ productName, sportswzrdBaseUrl, supabaseUrl, supabaseAnonKey, authSuccessPath, sendToBackground, pricing, unlockAllFeatures?, freeTrial?, getActivePromoCode?, storage? }` |
 | `WzrdPricingConfig` | type | — | `{ monthlyLookupKey, yearlyLookupKey, features, fallbackMonthlyCents, fallbackYearlyCents, currency?, proProductKeys }` |
-| `WzrdBackgroundMessage` | type | — | Union of kit → background messages: `STRIPE_CHECKOUT`, `GET_STRIPE_PRICES`, `CHECK_SUBSCRIPTION`, `GET_USAGE`, `TRACK_EVENT`. The host extension's background must handle all five. |
+| `WzrdBackgroundMessage` | type | — | Union of kit → background messages: `STRIPE_CHECKOUT`, `GET_STRIPE_PRICES`, `CHECK_SUBSCRIPTION`, `GET_USAGE`, `WZRD_TRACK_EVENT`. The host extension's background must handle all five. |
 | `WzrdBackgroundSend` | type | — | `(message: WzrdBackgroundMessage) => Promise<unknown>` — map onto the host's typed bus. |
 
 ## Brand tokens (`src/brand.ts`) — config: none
@@ -139,7 +139,7 @@ Event **names** stay in each sport repo (`FF League Page Loaded`, …). The kit 
 
 | Export | Kind | Config | What it does |
 | --- | --- | --- | --- |
-| `trackEvent(event, properties?)` / `trackEventAsync` | function | config | Content script / popup → `TRACK_EVENT` on `sendToBackground`. Attaches `authenticated` and `user_id` (Supabase id, not email). |
+| `trackEvent(event, properties?)` / `trackEventAsync` | function | config | Content script / popup → `WZRD_TRACK_EVENT` on `sendToBackground`. Attaches `authenticated` and `user_id` (Supabase id, not email). Named to avoid colliding with PlayaYield's `TRACK_EVENT`. |
 | `createMixpanelClient(options)` | function | none | Service-worker client. Options: `token` (project token), `distinctIdStorageKey`, `mpLib`, optional `environment` / `log`. Import from `wzrd-extension-kit/mixpanel` so the worker does not bundle kit React. |
 | `buildMixpanelEvent` / `sanitizeProperties` / `utf8ToBase64` / `encodeMixpanelFormBody` | function | none | Pure `/track` payload helpers (tests and custom workers). |
 | `MixpanelProperties`, `MixpanelClient`, `CreateMixpanelClientOptions` | types | — | Property map and client shapes. |

@@ -16,7 +16,8 @@ export type WzrdBackgroundMessage =
 	| { type: 'CHECK_SUBSCRIPTION'; accessToken: string }
 	| { type: 'GET_USAGE'; accessToken: string; feature: string }
 	| {
-			type: 'TRACK_EVENT';
+			/** Host Mixpanel track. Named to avoid colliding with PlayaYield's `TRACK_EVENT`. */
+			type: 'WZRD_TRACK_EVENT';
 			event: string;
 			properties?: Record<string, string | number | boolean | null | undefined>;
 	  };

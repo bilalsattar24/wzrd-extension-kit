@@ -1,6 +1,9 @@
 /**
- * Content-script / popup Mixpanel entry. Sends TRACK_EVENT through the host bus.
+ * Content-script / popup Mixpanel entry. Sends WZRD_TRACK_EVENT through the host bus.
  * Event names stay in each sport repo.
+ *
+ * Named `WZRD_TRACK_EVENT` (not `TRACK_EVENT`) so PlayaYield's background listener
+ * does not claim the message and drop host Mixpanel events.
  */
 import { getSession } from '../auth/auth';
 import { getKitConfig } from '../configure';
@@ -32,7 +35,7 @@ export async function trackEventAsync(
 		const { sendToBackground } = getKitConfig();
 		const session = await getSession();
 		await sendToBackground({
-			type: 'TRACK_EVENT',
+			type: 'WZRD_TRACK_EVENT',
 			event,
 			properties: {
 				...properties,

@@ -121,7 +121,7 @@ configureWzrdKit({
 });
 ```
 
-Map `sendToBackground` onto the host extension’s typed bus. Kit messages: `STRIPE_CHECKOUT`, `GET_STRIPE_PRICES`, `CHECK_SUBSCRIPTION`, `GET_USAGE`, `TRACK_EVENT`.
+Map `sendToBackground` onto the host extension’s typed bus. Kit messages: `STRIPE_CHECKOUT`, `GET_STRIPE_PRICES`, `CHECK_SUBSCRIPTION`, `GET_USAGE`, `WZRD_TRACK_EVENT`.
 
 Mixpanel: each extension defines event names and passes its **project token** (not the API secret) into `createMixpanelClient` in the service worker. Content scripts call `trackEvent` after `configureWzrdKit`. Deep-import `wzrd-extension-kit/mixpanel` from the worker so kit React stays out of that bundle. Do not add Mixpanel `host_permissions`.
 

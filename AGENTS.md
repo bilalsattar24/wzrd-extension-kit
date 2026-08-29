@@ -19,7 +19,7 @@ Consumers: `fantasyBasketballWizard`, `fantasy-baseball-wzrd`, `fantasy-football
 - Prefer `async`/`await`.
 - Sport-specific Yahoo/ESPN DOM, stat math, and feature UIs stay in the sport repos.
 - Apps inject config: sport, brand strings, Stripe lookup keys, Supabase URL/key, storage prefix, background `send`.
-- Mixpanel: reusable `/track` client + `TRACK_EVENT` bus helper. Event names and the **project token** stay in each sport repo. Never ship the Mixpanel API secret. Service workers deep-import `wzrd-extension-kit/mixpanel` (no React). Do not add Mixpanel `host_permissions`.
+- Mixpanel: reusable `/track` client + `WZRD_TRACK_EVENT` bus helper (not `TRACK_EVENT` — that name collides with PlayaYield). Event names and the **project token** stay in each sport repo. Never ship the Mixpanel API secret. Service workers deep-import `wzrd-extension-kit/mixpanel` (no React). Do not add Mixpanel `host_permissions`.
 - Guest checkout is shared (`WzrdCheckoutEmailPrompt` + `isValidCheckoutEmail`). Do not require sign-in before Stripe; the web webhook creates the account.
 - Matchup projection loading UI is shared (`WzrdProjectionsSkeleton`). Sport repos pass loading messages and dummy category labels; Yahoo table class names stay in the sport repo.
 - Never add extension manifest permissions from this kit.
