@@ -25,7 +25,7 @@ Keep this file in sync with `src/index.ts` whenever exports change.
 | `configureWzrdKit(config)` | function | — | Registers kit config for this JS context (content script and popup each need their own call). Must run before auth, pay, storage helpers, or chrome UI. |
 | `getKitConfig()` | function | config | Returns the active config; throws if `configureWzrdKit` has not run. |
 | `getKitStorage()` | function | storage | Returns the `WzrdStorageApi` from config; throws if none was passed. |
-| `WzrdKitConfig` | type | — | `{ productName, sportswzrdBaseUrl, supabaseUrl, supabaseAnonKey, authSuccessPath, sendToBackground, pricing, unlockAllFeatures?, freeTrial?, getActivePromoCode?, storage? }` |
+| `WzrdKitConfig` | type | — | `{ productName, sportswzrdBaseUrl, supabaseUrl, supabaseAnonKey, authSuccessPath, sendToBackground, pricing, unlockAllFeatures?, unlockAllFeaturesLabel?, freeTrial?, getActivePromoCode?, storage? }` |
 | `WzrdPricingConfig` | type | — | `{ monthlyLookupKey, yearlyLookupKey, features, fallbackMonthlyCents, fallbackYearlyCents, currency?, proProductKeys }` |
 | `WzrdBackgroundMessage` | type | — | Union of kit → background messages: `STRIPE_CHECKOUT`, `GET_STRIPE_PRICES`, `CHECK_SUBSCRIPTION`, `GET_USAGE`, `WZRD_TRACK_EVENT`. The host extension's background must handle all five. |
 | `WzrdBackgroundSend` | type | — | `(message: WzrdBackgroundMessage) => Promise<unknown>` — map onto the host's typed bus. |
@@ -107,7 +107,7 @@ Guest checkout rule: collect an email with `WzrdCheckoutEmailPrompt`, then open 
 | `isProEntitled(s)` / `isUltraEntitled(s)` | function | config | Entitlement checks on a subscription payload. |
 | `isWZRDProUser()` | async | config | Fetches the subscription itself and returns whether the user has Pro access (always true in open beta). |
 | `formatStripePriceLabel(amountCents, currency, interval)` | function | none | Localized price label with `/mo` or `/yr`. |
-| `getActivePromoCode()` / `areFreeTrialsEnabled()` / `getFreeTrialDays()` / `unlockAllFeatures()` | function | config | Read promo / trial / open-beta flags off kit config. |
+| `getActivePromoCode()` / `areFreeTrialsEnabled()` / `getFreeTrialDays()` / `unlockAllFeatures()` / `unlockAllFeaturesLabel()` | function | config | Read promo / trial / unlock-all flags off kit config. `unlockAllFeaturesLabel()` is `null` when the status-bar chip should hide. |
 | `WzrdPricingModal` | component | config | The paywall. Yearly-dominant plan cards, live Stripe amounts, guest checkout built in. Props: `open`, `onClose`, `context?`, `headline?`. |
 | `UpgradePrompt` | component | config | Banner that opens the pricing modal. Props: `text?`, `context?`. |
 | `FeatureUpgradePrompt` | component | none | Feature-gated upsell card. Props: `featureName`, `description`, `onUpgrade`, `className?`. |
@@ -119,7 +119,7 @@ Guest checkout rule: collect an email with `WzrdCheckoutEmailPrompt`, then open 
 
 | Export | Config | What it does | Key props |
 | --- | --- | --- | --- |
-| `WzrdStatusBar` | config | Shared status/control bar: product title, plan chip (Pro / Ultra / Trial / Free / Open Beta), login/profile, social links, pricing modal wiring. Sport-specific controls go in `actions`. | `actions?`, `welcomeStorageKey?`, `welcomeBody?`, `frameClassName?`. |
+| `WzrdStatusBar` | config | Shared status/control bar: product title, plan chip (Pro / Ultra / Trial / Free, or the unlock-all label), login/profile, social links, pricing modal wiring. Sport-specific controls go in `actions`. | `actions?`, `welcomeStorageKey?`, `welcomeBody?`, `frameClassName?`. |
 | `WzrdLoginForm` / `WzrdLoginFormProps` | config | Login/signup modal (password + Google OAuth); shows profile + logout when signed in. | `open?`, `onClose?`, `onLoginSuccess?`, `onLoginError?`, `onLogoutSuccess?`, `showTitle?`, `className?`. |
 | `WzrdLoginButton` | config | Trigger button that opens `WzrdLoginForm`; label flips when signed in. | `style?`, `className?`, `label?`, `logoutLabel?`, `onLoginSuccess?`, `onLoginError?`, `onLogoutSuccess?`. |
 | `WzrdProfileButton` | config | Signed-in profile/account button. | `style?`, `className?`. |
