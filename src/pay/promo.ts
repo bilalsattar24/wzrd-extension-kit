@@ -30,10 +30,32 @@ export function getFreeTrialDays(): number {
 }
 
 /**
- * Reports the early-access switch that unlocks Pro without a subscription.
+ * Reports the unlock-all switch that treats every user as entitled.
  *
  * @returns `true` when `unlockAllFeatures` is set on kit config.
  */
 export function unlockAllFeatures(): boolean {
 	return getKitConfig().unlockAllFeatures === true;
+}
+
+const DEFAULT_UNLOCK_ALL_FEATURES_LABEL = 'Open Beta';
+
+/**
+ * Status-bar chip while unlock-all is on.
+ *
+ * @returns Override text, the kit default, or `null` when the chip should hide.
+ */
+export function unlockAllFeaturesLabel(): string | null {
+	if (!unlockAllFeatures()) {
+		return null;
+	}
+	const config = getKitConfig();
+	if (config.unlockAllFeaturesLabel === null) {
+		return null;
+	}
+	if (typeof config.unlockAllFeaturesLabel === 'string') {
+		const trimmed = config.unlockAllFeaturesLabel.trim();
+		return trimmed.length > 0 ? trimmed : null;
+	}
+	return DEFAULT_UNLOCK_ALL_FEATURES_LABEL;
 }

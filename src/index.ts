@@ -81,6 +81,7 @@ export {
 	getActivePromoCode,
 	getFreeTrialDays,
 	unlockAllFeatures,
+	unlockAllFeaturesLabel,
 } from './pay/promo';
 export {
 	defaultSubscription,

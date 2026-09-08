@@ -45,6 +45,12 @@ export type WzrdKitConfig = {
 	sendToBackground: WzrdBackgroundSend;
 	pricing: WzrdPricingConfig;
 	unlockAllFeatures?: boolean;
+	/**
+	 * Status-bar chip while {@link WzrdKitConfig.unlockAllFeatures} is on.
+	 * Pass a string to override the default (`Open Beta`), or `null` to hide it.
+	 * Omit to keep the kit default.
+	 */
+	unlockAllFeaturesLabel?: string | null;
 	freeTrial?: { enabled: boolean; days: number };
 	getActivePromoCode?: () => string | null;
 	storage?: WzrdStorageApi;
