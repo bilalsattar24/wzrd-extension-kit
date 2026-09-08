@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { useEffect, useState, type ReactNode } from 'react';
 import { useAuth } from '../auth/auth';
 import { getKitConfig } from '../configure';
-import { unlockAllFeatures } from '../pay/promo';
+import { unlockAllFeatures, unlockAllFeaturesLabel } from '../pay/promo';
 import {
 	fetchSubscriptionViaBackground,
 	getAccessBadge,
@@ -30,18 +30,26 @@ function planBadgeClassName(kind: 'pro' | 'ultra' | 'free' | 'trial' | 'beta'): 
  * @param authenticated - Whether a user is signed in.
  * @param subscription - Latest subscription payload, if loaded.
  */
+/**
+ * Chip shown when unlock-all is on and the sport did not hide it.
+ */
+function unlockAllChip(): { text: string; kind: 'beta' } | null {
+	const label = unlockAllFeaturesLabel();
+	return label ? { text: label, kind: 'beta' } : null;
+}
+
 function titlePlanBadge(
 	authenticated: boolean,
 	subscription: SubscriptionStatusResponse | null,
 ): { text: string; kind: 'pro' | 'ultra' | 'free' | 'trial' | 'beta' } | null {
 	if (!authenticated) {
-		return unlockAllFeatures() ? { text: 'Open Beta', kind: 'beta' } : null;
+		return unlockAllChip();
 	}
 	const access = subscription ? getAccessBadge(subscription) : 'free';
 	if (access === 'ultra') return { text: 'SportsWZRD Ultra', kind: 'ultra' };
 	if (access === 'pro') return { text: 'Pro', kind: 'pro' };
 	if (access === 'trial') return { text: 'Trial', kind: 'trial' };
-	if (unlockAllFeatures()) return { text: 'Open Beta', kind: 'beta' };
+	if (unlockAllFeatures()) return unlockAllChip();
 	return { text: 'Free', kind: 'free' };
 }
 
